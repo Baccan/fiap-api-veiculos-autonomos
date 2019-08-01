@@ -14,6 +14,11 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      required: true,
+    },
+    wallets: {
+      type: Array,
+      default: [],
     },
   },
   {
@@ -27,9 +32,5 @@ function encrypt(next) {
 }
 
 UserSchema.pre('save', encrypt);
-
-// checkPassword(camparePass) {
-//   return bcrypt.compare(comparePass, this.password);
-// };
 
 export default mongoose.model('User', UserSchema);

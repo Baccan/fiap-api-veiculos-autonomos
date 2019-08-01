@@ -1,4 +1,5 @@
 import User from '../schemas/User';
+// import Wallet from '../schemas/Wallet';
 
 class UserController {
   async store(req, res) {
@@ -28,6 +29,36 @@ class UserController {
     });
     users = {};
     return res.json(filterUsers);
+  }
+
+  async addWallet(req, res) {
+    async function checkWallets(err, doc) {
+      if (err) return res.status(400).json({ error: 'User not found!' });
+
+      const { wallets } = doc;
+
+      const walletExists = wallets.find(wallet => {
+        return wallet.number === req.body.number;
+      });
+
+      if (walletExists) {
+        return res.status(400).json({ error: 'Wallet already exists!' });
+      }
+
+      await User.findByIdAndUpdate('5d431e035b0e683338439efb', {
+        $push: {
+          wallets: {
+            number: req.body.number,
+            flag: req.body.flag,
+            verification_code: req.body.verification_code,
+          },
+        },
+      });
+
+      return res.json({ message: 'ok' });
+    }
+
+    User.findById('5d431e035b0e683338439efb', checkWallets);
   }
 }
 
