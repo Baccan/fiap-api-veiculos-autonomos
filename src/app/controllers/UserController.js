@@ -1,5 +1,4 @@
 import User from '../schemas/User';
-// import Wallet from '../schemas/Wallet';
 
 class UserController {
   async store(req, res) {
@@ -45,7 +44,7 @@ class UserController {
         return res.status(400).json({ error: 'Wallet already exists!' });
       }
 
-      await User.findByIdAndUpdate('5d431e035b0e683338439efb', {
+      await User.findByIdAndUpdate(req.params.id, {
         $push: {
           wallets: {
             number: req.body.number,
@@ -58,7 +57,7 @@ class UserController {
       return res.json({ message: 'ok' });
     }
 
-    User.findById('5d431e035b0e683338439efb', checkWallets);
+    User.findById(req.params.id, checkWallets);
   }
 }
 
