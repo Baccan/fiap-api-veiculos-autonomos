@@ -16,6 +16,6 @@ routes.post('/vehicles', VehicleController.store);
 
 routes.get('/travels', TravelController.availableVehicles);
 routes.post('/travels/start', TravelController.startTravel);
-routes.post('/travels/finish', TravelController.finishTravel);
+routes.post('/travels/finish/:id', TravelController.finishTravel);
 
 export default routes;

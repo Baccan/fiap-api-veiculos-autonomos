@@ -1,4 +1,4 @@
-import Vehicle from '../schemas/Vehicles';
+import Vehicle from '../schemas/Vehicle';
 
 class VehicleController {
   async store(req, res) {

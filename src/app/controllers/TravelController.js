@@ -1,4 +1,5 @@
-import Vehicle from '../schemas/Vehicles';
+import Travel from '../schemas/Travel';
+import Vehicle from '../schemas/Vehicle';
 import User from '../schemas/User';
 
 class VehicleController {
@@ -11,6 +12,19 @@ class VehicleController {
   async startTravel(req, res) {
     let { user, vehicle, start_point, finish_point } = req.body;
 
+    await User.find({ _id: user.id }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ message: 'User not found!' });
+      }
+    });
+    await Vehicle.find({ _id: vehicle.id }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ error: 'Vehicle not found!' });
+      }
+    });
+
     await User.findByIdAndUpdate(
       user.id,
       {
@@ -18,7 +32,7 @@ class VehicleController {
       },
       { new: true },
       function(err, model) {
-        if (err) return res.status(400).json({ error: 'User not found!' });
+        if (err) return res.status(500).json({ error: 'User not updated!' });
         user = {
           id: model._id,
           inTravel: model.inTravel,
@@ -35,30 +49,50 @@ class VehicleController {
       },
       { new: true },
       function(err, model) {
-        if (err) return res.status(400).json({ error: 'Vehicle not found!' });
-        vehicle = model;
-
-        let price = (start_point + finish_point) / 100;
-
-        if (price < 7) price = 7;
-
-        res.json({
-          started: true,
-          user,
-          vehicle,
-          price,
-        });
+        if (err) return res.status(500).json({ error: 'Vehicle not updated!' });
       }
     );
+
+    const findVehicle = await Vehicle.findById(vehicle.id);
+
+    let price = (start_point + finish_point) / 100;
+
+    if (price < 7) price = 7;
+
+    const travel = await Travel.create({
+      user,
+      vehicle: findVehicle,
+      price,
+      start_point,
+      finish_point,
+    });
+
+    res.json({
+      travel,
+    });
   }
 
   async finishTravel(req, res) {
-    let { user, vehicle, payed } = req.body;
+    let { user, vehicle } = req.body;
 
-    // if (!payed)
-    //   return res
-    //     .status(400)
-    //     .json({ error: 'You can only finish a paid travel!' });
+    await Travel.find({ _id: user.id }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ message: 'Travel not found!' });
+      }
+    });
+    await User.find({ _id: user.id }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ message: 'User not found!' });
+      }
+    });
+    await Vehicle.find({ _id: vehicle.id }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ message: 'Vehicle not found!' });
+      }
+    });
 
     await User.findByIdAndUpdate(
       user.id,
@@ -67,13 +101,7 @@ class VehicleController {
       },
       { new: true },
       function(err, model) {
-        if (err) return res.status(400).json({ error: 'User not found!' });
-        user = {
-          id: model._id,
-          inTravel: model.inTravel,
-          name: model.name,
-          email: model.email,
-        };
+        if (err) return res.status(500).json({ error: 'User not updated!' });
       }
     );
 
@@ -84,19 +112,25 @@ class VehicleController {
       },
       { new: true },
       function(err, model) {
-        if (err) return res.status(400).json({ error: 'Vehicle not found!' });
-        vehicle = model;
-
-        const price = Math.floor(Math.random() * 10 + 1);
-
-        res.json({
-          finished: true,
-          user,
-          vehicle,
-          price,
-        });
+        if (err) return res.status(500).json({ error: 'Vehicle not updated!' });
       }
     );
+
+    await Travel.findByIdAndUpdate(
+      req.params.id,
+      {
+        finished: true,
+        payed: true,
+      },
+      { new: true },
+      function(err, model) {
+        if (err) return res.status(500).json({ error: 'Travel not updated!' });
+      }
+    );
+
+    const findTravel = await Travel.findById(req.params.id);
+
+    return res.json(findTravel);
   }
 }
 
