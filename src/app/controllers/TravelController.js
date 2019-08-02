@@ -9,20 +9,56 @@ class VehicleController {
   }
 
   async startTravel(req, res) {
-    const { user, vehicle } = req.body;
+    let { user, vehicle, start_point, finish_point } = req.body;
 
-    await User.findByIdAndUpdate(user.id, {
-      inTravel: true,
-    });
+    await User.findByIdAndUpdate(
+      user.id,
+      {
+        inTravel: true,
+      },
+      { new: true },
+      function(err, model) {
+        if (err) return res.status(400).json({ error: 'User not found!' });
+        user = {
+          id: model._id,
+          inTravel: model.inTravel,
+          name: model.name,
+          email: model.email,
+        };
+      }
+    );
 
-    res.json({
-      message: 'Travel started!',
-      user: user,
-    });
+    await Vehicle.findByIdAndUpdate(
+      vehicle.id,
+      {
+        available: false,
+      },
+      { new: true },
+      function(err, model) {
+        if (err) return res.status(400).json({ error: 'Vehicle not found!' });
+        vehicle = model;
+
+        let price = (start_point + finish_point) / 100;
+
+        if (price < 7) price = 7;
+
+        res.json({
+          started: true,
+          user,
+          vehicle,
+          price,
+        });
+      }
+    );
   }
 
   async finishTravel(req, res) {
-    const { user, vehicle } = req.body;
+    let { user, vehicle, payed } = req.body;
+
+    // if (!payed)
+    //   return res
+    //     .status(400)
+    //     .json({ error: 'You can only finish a paid travel!' });
 
     await User.findByIdAndUpdate(
       user.id,
@@ -32,16 +68,35 @@ class VehicleController {
       { new: true },
       function(err, model) {
         if (err) return res.status(400).json({ error: 'User not found!' });
+        user = {
+          id: model._id,
+          inTravel: model.inTravel,
+          name: model.name,
+          email: model.email,
+        };
       }
     );
 
-    const price = Math.floor(Math.random() * 10 + 1);
+    await Vehicle.findByIdAndUpdate(
+      vehicle.id,
+      {
+        available: true,
+      },
+      { new: true },
+      function(err, model) {
+        if (err) return res.status(400).json({ error: 'Vehicle not found!' });
+        vehicle = model;
 
-    res.json({
-      message: 'Travel is finished!',
-      user: user,
-      price,
-    });
+        const price = Math.floor(Math.random() * 10 + 1);
+
+        res.json({
+          finished: true,
+          user,
+          vehicle,
+          price,
+        });
+      }
+    );
   }
 }
 
