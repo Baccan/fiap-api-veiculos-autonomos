@@ -22,6 +22,7 @@ class UserController {
         id: user._id,
         name: user.name,
         email: user.email,
+        inTravel: user.inTravel,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };

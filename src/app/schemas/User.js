@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    inTravel: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
