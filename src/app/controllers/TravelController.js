@@ -25,6 +25,17 @@ class VehicleController {
       }
     });
 
+    const inTravel = await Travel.find({
+      user: { _id: user.id },
+      finished: false,
+    });
+
+    if (inTravel) {
+      return res
+        .status(400)
+        .json({ error: 'Unable to create a trip during a trip' });
+    }
+
     await User.findByIdAndUpdate(
       user.id,
       {
@@ -75,7 +86,7 @@ class VehicleController {
   async finishTravel(req, res) {
     let { user, vehicle } = req.body;
 
-    await Travel.find({ _id: user.id }, (err, doc) => {
+    await Travel.find({ _id: req.params.id }, (err, doc) => {
       if (err) {
         console.log(err);
         return res.status(400).json({ message: 'Travel not found!' });
