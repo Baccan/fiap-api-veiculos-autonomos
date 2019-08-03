@@ -46,6 +46,11 @@ class UserController {
         return res.status(400).json({ error: 'Wallet already exists!' });
       }
 
+      if (wallets.length >= 4)
+        return res
+          .status(400)
+          .json({ error: 'user must have only 4 wallets!' });
+
       await User.findByIdAndUpdate(req.params.id, {
         $push: {
           wallets: {
