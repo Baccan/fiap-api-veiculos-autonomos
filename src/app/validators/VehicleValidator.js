@@ -6,7 +6,13 @@ export default async (req, res, next) => {
       plate: Yup.string().required(),
       model: Yup.string().required(),
       color: Yup.string().required(),
-      year: Yup.number().required(),
+      year: Yup.number()
+        .required()
+        .test(
+          'len',
+          'Must be exactly 4 characters',
+          val => val.toString().length === 4
+        ),
       category: Yup.string().required(),
       owner: Yup.string().required(),
       brand: Yup.string().required(),
