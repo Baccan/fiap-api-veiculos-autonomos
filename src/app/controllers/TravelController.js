@@ -9,8 +9,9 @@ class VehicleController {
     return res.json(availables);
   }
 
-  async startTravel(req, res) {
-    let { user, vehicle, start_point, finish_point } = req.body;
+  async startTravel(req, res, next) {
+    let { user } = req.body;
+    const { vehicle, start_point, finish_point } = req.body;
 
     await User.find({ _id: user.id }, (err, doc) => {
       if (err) {
@@ -81,10 +82,12 @@ class VehicleController {
     res.json({
       travel,
     });
+
+    return next();
   }
 
   async finishTravel(req, res) {
-    let { user, vehicle } = req.body;
+    const { user, vehicle } = req.body;
 
     await Travel.find({ _id: req.params.id }, (err, doc) => {
       if (err) {
@@ -96,7 +99,9 @@ class VehicleController {
     const findTravel = await Travel.findById(req.params.id);
 
     if (findTravel.finished) {
-      return res.status(400).json({ message: 'You cannot finish a trip that has already been finalized!' });
+      return res.status(400).json({
+        message: 'You cannot finish a trip that has already been finalized!',
+      });
     }
 
     await User.find({ _id: user.id }, (err, doc) => {
