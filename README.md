@@ -44,7 +44,42 @@ yarn dev
 
 Com este comando, o servidor de desenvolvimento será aberto em "http://localhost:3333".
 
-## Ferramentas e utilizades
+### 4º Crie um usuário e autentique-se
+
+Utilize a rota POST "http://localhost:3333/users" para criar um usuário.
+
+Exemplo de requisição:
+
+```
+{
+	"name": "Gustavo",
+	"email": "email@email.com",
+	"password": "1234"
+}
+```
+
+Autentique-se para criar um token de sessão utilizando a rota POST "http://localhost:3333/sessions".
+
+Exemplo de requisição:
+
+```
+{
+	"email": "email@email.com",
+	"password": "1234"
+}
+```
+
+### 5º Token
+
+Ao autenticar-se na aplicação, você deverá passar o `token` recebido para as demais requisições como um `Bearer token` de `Authorization`.
+
+## Insomnia
+
+Caso utilize [Insomnia](https://insomnia.rest/download/) para testes de requisições:
+
+Na raiz do projeto, pode-se encontrar o arquivo Insomnia_config.json para importar uma workspace do insomnia e testar as rotas da aplicação.
+
+## Ferramentas e utilizadas
 
 A aplicação utiliza as seguintes ferramentas e utilidades:
 
