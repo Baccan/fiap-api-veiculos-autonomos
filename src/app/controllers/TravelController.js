@@ -26,11 +26,11 @@ class VehicleController {
     });
 
     const inTravel = await Travel.find({
-      user: { _id: user.id },
+      email: user.email,
       finished: false,
     });
 
-    if (inTravel) {
+    if (inTravel.length >= 1) {
       return res
         .status(400)
         .json({ error: 'Unable to create a trip during a trip' });
@@ -45,7 +45,7 @@ class VehicleController {
       function(err, model) {
         if (err) return res.status(500).json({ error: 'User not updated!' });
         user = {
-          id: model._id,
+          _id: model._id,
           inTravel: model.inTravel,
           name: model.name,
           email: model.email,

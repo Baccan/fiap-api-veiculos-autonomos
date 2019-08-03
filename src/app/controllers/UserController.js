@@ -3,6 +3,7 @@ import User from '../schemas/User';
 class UserController {
   async store(req, res) {
     const userExists = await User.findOne({ email: req.body.email });
+
     if (userExists) {
       return res.status(400).json({ error: 'User already exists' });
     }
