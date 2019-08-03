@@ -92,6 +92,13 @@ class VehicleController {
         return res.status(400).json({ message: 'Travel not found!' });
       }
     });
+
+    const findTravel = await Travel.findById(req.params.id);
+
+    if (findTravel.finished) {
+      return res.status(400).json({ message: 'You cannot finish a trip that has already been finalized!' });
+    }
+
     await User.find({ _id: user.id }, (err, doc) => {
       if (err) {
         console.log(err);
@@ -138,8 +145,6 @@ class VehicleController {
         if (err) return res.status(500).json({ error: 'Travel not updated!' });
       }
     );
-
-    const findTravel = await Travel.findById(req.params.id);
 
     return res.json(findTravel);
   }
